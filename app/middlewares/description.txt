@@ -1,0 +1,18 @@
+En esta carpeta o capa, debemos definir los middlewares que vamos a usar en el proyecto
+1. Implementar un middleware de autenticacion
+2. JWT, Bearer Token y las validaciones -> ADASDASDAA -> Informacion del usuario
+3. Implementar un middleware de autorizacion
+3.1. Es resolver en un solo middleware todas las condiciones
+3.1.1. Que el servicio este disponible solo para admin
+3.1.2. Que el usuario sea dueno de la cuenta
+3.1.3. Que el usuario sea dueno del flat -> Van a necesitar consultar info a la BDD (caso mas complicado)
+
+- Primero necesito saber cual es el usuario que esta haiendo el request -> lo obtengo del middleware de autenticacion
+- Luego comparar esos ids, en caso de que hago match le dejamos continuar o en el caso que no un 403
+
+- NOTA: Si necesitan hacer alguna consutla a BDD, en el middleware pueden llamar al modelo o modelos que necesiten
+
+- 2 opciones para resolver este flujo:
+
+1. Lo implementan todo dentro del mismo middleware de autorizacion
+2. Lo implementan en mimddlewares separados, middleware para validacion de admin, dueno de la cuenta, usuario dueno del flat
