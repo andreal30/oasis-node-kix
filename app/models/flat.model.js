@@ -32,6 +32,14 @@ const flatSchema = new mongoose.Schema({
     dateAvailable: {
         type: Date,
     },
+    rooms: {
+        type: Number,
+        required: true
+    },
+    bathrooms: {
+        type: Number,
+        required: true
+    },
     image: {
         type: String,
         required: true

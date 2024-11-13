@@ -15,6 +15,7 @@ const testLogs = async (req, res) => {
     logger.debug("This is a debug");
     res.send({ message: "Logs test" });
   } catch (error) {
+    logger.error(error.message);
     res.status(500).send({ message: error.message });
   }
 };
