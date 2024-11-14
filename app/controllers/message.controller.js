@@ -1,14 +1,27 @@
 import { Message } from "../models/message.model.js";
 
-const getAllFlats = async (req, res) => {
+const getAllMessages = async (req, res) => {
     try {
-        const flats = await Flat.find();
-        res.status(200).json(flats);
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+
     }
 };
 
+const getUserMessage = async (req, res) => {
+    try {
 
+    } catch (error) {
 
-export { getAllFlats };
+    }
+};
+
+const addMessage = async (req, res) => {
+    try {
+
+    } catch (error) {
+
+    }
+};
+
+export { getAllMessages, getUserMessage, addMessage }
