@@ -1,11 +1,11 @@
 import express from "express";
-import { connectDB } from "./db/db.js";
+import { connectDB } from "./app/db/db.js";
 // import flatRoutes from "./routes/flat.router.js";
-// import userRoutes from "./routes/user.router.js";
+import userRoutes from "./app/routes/user.router.js";
 // import authRoutes from "./routes/auth.router.js";
-// import logsRoutes from "./routes/logs.router.js";
+import logsRoutes from "./app/routes/logs.router.js";
 // import messageRoutes from "./routes/message.router.js";
-import configs from "./configs/configs.js";
+import configs from "./app/configs/configs.js";
 import cors from "cors";
 
 const app = express();
@@ -18,9 +18,9 @@ connectDB();
 
 // app.use("/flats", flatRoutes);
 // app.use("/messages", messageRoutes);
-// app.use("/users", userRoutes);
+app.use("/users", userRoutes);
 // app.use("/auth", authRoutes);
-// app.use("/logs", logsRoutes);
+app.use("/logs", logsRoutes);
 
 app.listen(configs.PORT, () => {
   console.log(`Server running on port ${configs.PORT}`);
