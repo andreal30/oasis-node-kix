@@ -1,0 +1,5 @@
+USER:
+- alias: "name",
+- alias: "last",
+- alias: "birth",
+- alias: "favs",

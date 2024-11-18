@@ -3,21 +3,18 @@ import {
   deleteUser,
   getAllUsers,
   getUserById,
-  saveUser,
   updateUser,
 } from "../controllers/user.controller.js";
-
-// * /users GET -> / GET -> getAllUsers
-// * /users/:id GET -> /:id GET -> getUserById
-// * /users/:id PATCH  -> / PATCH -> updateUser
-// * /users/:id DELETE -> / DELETE -> deleteUser
+import {
+  adminMiddleware,
+  ownerUserMiddleware,
+} from "../middlewares/authorization.middleware.js";
 
 const router = Router();
 
-router.get("/", getAllUsers);
-router.post("/", saveUser);
-router.get("/:id", getUserById);
-router.patch("/:id", updateUser);
-router.delete("/:id", deleteUser);
+router.get("/", adminMiddleware, getAllUsers); // admin
+router.get("/:id", adminMiddleware, getUserById); //admin/account owner*
+router.patch("/:id", adminMiddleware, ownerUserMiddleware, updateUser); //admin/account owner
+router.delete("/:id", adminMiddleware, ownerUserMiddleware, deleteUser); //admin/account owner
 
 export default router;

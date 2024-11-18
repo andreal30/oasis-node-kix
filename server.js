@@ -1,10 +1,10 @@
 import express from "express";
 import { connectDB } from "./app/db/db.js";
-// import flatRoutes from "./routes/flat.router.js";
+// import flatRoutes from "./app/routes/flat.router.js";
 import userRoutes from "./app/routes/user.router.js";
-// import authRoutes from "./routes/auth.router.js";
+import authRoutes from "./app/routes/auth.router.js";
 import logsRoutes from "./app/routes/logs.router.js";
-// import messageRoutes from "./routes/message.router.js";
+// import messageRoutes from "./app/routes/message.router.js";
 import configs from "./app/configs/configs.js";
 import cors from "cors";
 
@@ -19,7 +19,7 @@ connectDB();
 // app.use("/flats", flatRoutes);
 // app.use("/messages", messageRoutes);
 app.use("/users", userRoutes);
-// app.use("/auth", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/logs", logsRoutes);
 
 app.listen(configs.PORT, () => {

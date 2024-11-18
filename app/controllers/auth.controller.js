@@ -3,12 +3,44 @@ import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import sendEmail from "../utils/email.js";
 import crypto from "crypto";
+import logger from "../utils/logger.js";
+import bcrypt from "bcrypt";
 
 const register = async (req, res) => {
   try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json(user);
+    const userEmail = await User.findOne({ email: req.body.email });
+
+    if (!userEmail) {
+      // If no user exists with the given email, create a new user
+      const newUser = new User(req.body);
+      await newUser.save();
+      return res.status(201).json(newUser);
+    }
+
+    if (userEmail.deleted !== null) {
+      // Convert to Mongoose document if it's not already
+      const user = await User.findById(userEmail._id);
+
+      user.deleted = null;
+      user.updated = new Date();
+
+      // Check if a new password is provided in the request
+      if (req.body.password) {
+        user.password = req.body.password;
+        await user.validate(); // Manually trigger validation (and any hooks)
+      }
+
+      // Save the user document (this triggers the pre-save hook)
+      await user.save();
+
+      return res.status(200).json({
+        message: "User restored successfully",
+        user,
+      });
+    }
+
+    // If the user exists and is not deleted, return a conflict error
+    res.status(409).json({ message: "User already exists and is active" });
   } catch (error) {
     logger.error(error.message);
     res.status(400).json({ message: error.message });
@@ -17,35 +49,46 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    //1.- Vamos a obtener las credenciales (username, password) del request
-    const { username, password } = req.body;
-    //2.- Vamos a buscar el usuario en la BDD, si no existe vamos a retornar un 404
-    const user = await User.findOne({ username });
+    const password = req.body.password;
+    const emailUsername = req.body.username || req.body.email;
+
+    // Determine if the input is an email or a username
+    const isEmail = emailUsername.includes("@");
+    const query = isEmail
+      ? { email: emailUsername }
+      : { username: emailUsername };
+
+    // Find the user by email or username
+    const user = await User.findOne(query);
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    //3.- Vamos a comparar la contraseña que viene en el request con la contraseña hasheada que tenemos en la BDD
+
+    // Compare the password
     const passwordsMatch = await user.comparePasswords(password);
-    //4.- Si las contraseñas no coinciden, vamos a retornar un 401
     if (!passwordsMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    //5.- Si las contraseñas coinciden, vamos a generar un token JWT y lo vamos a retornar en la respuesta
-    // El metodo sign lo que hace es firmar nuestro jwt (token), la firma del token sirve para poder validar
-    // que el token no ha sido modificado por un tercero
-    // EL primer parametro que vamos a enviar en el metodo es un objeto que contiene la informacion del usuario
-    // FSHGAFGJDFG%JSDFK/(435345) -> Informacion del usuario
-    const token = await jwt.sign(
+
+    // Generate JWT token
+    const token = jwt.sign(
       { user_id: user._id, role: user.role },
       configs.JWT_SECRET,
-      {
-        expiresIn: "1h",
-      }
+      { expiresIn: "1h" }
     );
-    res.status(200).json({ token });
+
+    // Set token as httpOnly cookie (optional)
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000,
+    });
+
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
-    logger.error(error.message);
-    res.status(500).json({ message: error.message });
+    logger.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

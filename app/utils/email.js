@@ -7,8 +7,9 @@ import configs from "../configs/configs.js";
 const sendEmail = async (options) => {
   //vamos a crear la integracion con el servicio de mailtrap usando nodemailer
   const transporter = nodemailer.createTransport({
-    host: "live.smtp.mailtrap.io",
-    port: 587,
+    // host: "live.smtp.mailtrap.io",
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
     auth: {
       user: configs.MAILTRAP_USER,
       pass: configs.MAILTRAP_PASS,
@@ -17,7 +18,7 @@ const sendEmail = async (options) => {
 
   //Vamos a armar las opciones de envio de nuestro correo
   const mailOptions = {
-    from: '"Kruger Backend" <no-reply@demomailtrap.com>',
+    from: '"Flat Finder App" <no-reply@andrealvarezcis.com>',
     to: options.email,
     subject: options.subject,
     text: options.message,
