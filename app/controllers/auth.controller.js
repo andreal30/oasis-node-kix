@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import sendEmail from "../utils/email.js";
 import crypto from "crypto";
 import logger from "../utils/logger.js";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 
 const register = async (req, res) => {
   try {
@@ -134,39 +134,44 @@ const forgotPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-    //1.- Vamos a obtener el token del request
     const { token } = req.params;
-    //2.- Vamos a obtener la nueva password que ha configurado el usuario
     const { password } = req.body;
-    //3.- En BDD tenemos el token pero esta hasheado y lo que llega en el request esta en texto plano
-    //Vamos a hashear el token que llega en el request para poder compararlo con el token hasheado que tenemos en la BDD
+
+    console.log("Token received:", token);
+    console.log("Password received:", password);
+
+    if (!token || !password) {
+      return res
+        .status(400)
+        .json({ message: "Token and password are required" });
+    }
+
     const resetPasswordToken = crypto
       .createHash("sha256")
       .update(token)
       .digest("hex");
 
-    //4.- Vamos a buscar ese usuario de acuerdo al token hasheado, y ademas vamos a aplicar la condicion de tiempo de vida del token
+    console.log("Hashed token:", resetPasswordToken);
+
     const user = await User.findOne({
       resetPasswordToken,
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    //5.- Validar si el usuario que estamos buscando existe o no
     if (!user) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
-    //6.- Vamos a actualizar la password del usuario
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
 
     await user.save();
-
-    res.json({ message: "Password updated" });
+    res.json({ message: "Password updated successfully" });
   } catch (error) {
+    console.error("Error during password reset:", error);
     logger.error(error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
