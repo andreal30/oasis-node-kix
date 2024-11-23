@@ -9,7 +9,7 @@ const messageSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Flat",
     },
-    senderId:{
+    senderId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
@@ -19,4 +19,4 @@ const messageSchema = new mongoose.Schema({
     },
 })
 
-export const Message = mongoose.model("Message", messageSchema)
+export const Message = mongoose.model("Message", messageSchema, "Message");
