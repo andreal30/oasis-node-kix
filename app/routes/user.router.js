@@ -9,12 +9,25 @@ import {
   adminMiddleware,
   ownerUserMiddleware,
 } from "../middlewares/authorization.middleware.js";
+import authenticationMiddleware from "../middlewares/authentication.middleware.js";
 
 const router = Router();
 
-router.get("/", adminMiddleware, getAllUsers); // admin
-router.get("/:id", adminMiddleware, getUserById); //admin/account owner*
-router.patch("/:id", adminMiddleware, ownerUserMiddleware, updateUser); //admin/account owner
-router.delete("/:id", adminMiddleware, ownerUserMiddleware, deleteUser); //admin/account owner
+router.get("/", authenticationMiddleware, adminMiddleware, getAllUsers); // admin
+router.get("/:id", authenticationMiddleware, adminMiddleware, getUserById); //admin/account owner*
+router.patch(
+  "/:userId",
+  authenticationMiddleware,
+  adminMiddleware,
+  ownerUserMiddleware,
+  updateUser
+); //admin/account owner
+router.delete(
+  "/:userId",
+  authenticationMiddleware,
+  adminMiddleware,
+  ownerUserMiddleware,
+  deleteUser
+); //admin/account owner
 
 export default router;

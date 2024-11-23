@@ -29,8 +29,8 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { updated: new Date() }, // Set the 'deleted' field to the current date
+      req.params.userId,
+      { updated: new Date(), ...req.body }, // Set the 'deleted' field to the current date
       { new: true, runValidators: true } // Options for returning the updated document
     );
 
@@ -48,7 +48,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
-      req.params.id,
+      req.params.userId,
       { deleted: new Date(), updated: new Date() }, // Set the 'deleted' field to the current date
       { new: true, runValidators: true } // Options for returning the updated document
     );

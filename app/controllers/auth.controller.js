@@ -73,7 +73,7 @@ const login = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { user_id: user._id, role: user.role },
+      { user_id: user._id, isAdmin: user.isAdmin },
       configs.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -85,7 +85,7 @@ const login = async (req, res) => {
       maxAge: 3600000,
     });
 
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     logger.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -108,7 +108,7 @@ const forgotPassword = async (req, res) => {
 
     //3.- Vamos a generar la url que vamos a enviar al correo del usuario
     //http://localhost:5173/reset-password/jkashdfjkasdfhk&hjaf
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetUrl = `http://flat-finder-back.andrealvarezcis.com/auth/reset-password/${resetToken}`;
 
     try {
       const message = `Para resetear el password, accede al siguiente link: ${resetUrl}`;
