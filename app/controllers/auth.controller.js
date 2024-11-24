@@ -108,6 +108,7 @@ const forgotPassword = async (req, res) => {
 
     //3.- Vamos a generar la url que vamos a enviar al correo del usuario
     //`http://flat-finder-back.andrealvarezcis.com/reset-password/${resetToken}`
+    // Confirmar si el link es con el front o back (creo que es con el front, asi que se tiene que cambiar)
     const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
 
     try {

@@ -1,5 +1,3 @@
-user.router.js;
-
 import { Router } from "express";
 import {
   deleteUser,
