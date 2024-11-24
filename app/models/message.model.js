@@ -4,6 +4,7 @@ const messageSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
+    minlength: 1,
   },
   flatId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,4 +20,4 @@ const messageSchema = new mongoose.Schema({
   },
 });
 
-export const Message = mongoose.model("Message", messageSchema, "Message");
+export const Message = mongoose.model("Message", messageSchema);
