@@ -107,8 +107,9 @@ const forgotPassword = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     //3.- Vamos a generar la url que vamos a enviar al correo del usuario
-    //http://localhost:5173/reset-password/jkashdfjkasdfhk&hjaf
-    const resetUrl = `http://flat-finder-back.andrealvarezcis.com/auth/reset-password/${resetToken}`;
+    //`http://flat-finder-back.andrealvarezcis.com/reset-password/${resetToken}`
+    // Confirmar si el link es con el front o back (creo que es con el front, asi que se tiene que cambiar)
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
 
     try {
       const message = `Para resetear el password, accede al siguiente link: ${resetUrl}`;

@@ -4,6 +4,7 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
+  addFlatFavourites,
 } from "../controllers/user.controller.js";
 import {
   adminMiddleware,
@@ -14,7 +15,7 @@ import authenticationMiddleware from "../middlewares/authentication.middleware.j
 const router = Router();
 
 router.get("/", authenticationMiddleware, adminMiddleware, getAllUsers); // admin
-router.get("/:id", authenticationMiddleware, adminMiddleware, getUserById); //admin/account owner*
+router.get("/:userId", authenticationMiddleware, adminMiddleware, getUserById); //admin/account owner*
 router.patch(
   "/:userId",
   authenticationMiddleware,
@@ -29,5 +30,6 @@ router.delete(
   ownerUserMiddleware,
   deleteUser
 ); //admin/account owner
+router.post("/:userId", authenticationMiddleware, addFlatFavourites);
 
 export default router;

@@ -5,7 +5,7 @@ const flatSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  streeName: {
+  streetName: {
     type: String,
     required: true,
   },
@@ -20,6 +20,7 @@ const flatSchema = new mongoose.Schema({
   hasAc: {
     type: Boolean,
     default: false,
+    required: true,
   },
   yearBuilt: {
     type: Number,
@@ -31,6 +32,7 @@ const flatSchema = new mongoose.Schema({
   },
   dateAvailable: {
     type: Date,
+    required: true,
   },
   rooms: {
     type: Number,
@@ -58,4 +60,5 @@ const flatSchema = new mongoose.Schema({
   },
 });
 
-export const Flat = mongoose.model("Flat", flatSchema, "Flat");
+const Flat = mongoose.model("Flat", flatSchema);
+export default Flat;
