@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import sendEmail from "../utils/email.js";
 import crypto from "crypto";
 import logger from "../utils/logger.js";
+import { emailContent } from "../utils/emailContent.js";
 // import bcrypt from "bcrypt";
 
 const register = async (req, res) => {
@@ -107,12 +108,12 @@ const forgotPassword = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     //3.- Vamos a generar la url que vamos a enviar al correo del usuario
-    //`http://flat-finder-back.andrealvarezcis.com/reset-password/${resetToken}`
+    //`http://flat-finder.andrealvarezcis.com/reset-password/${resetToken}`
     // Confirmar si el link es con el front o back (creo que es con el front, asi que se tiene que cambiar)
     const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
 
     try {
-      const message = `Para resetear el password, accede al siguiente link: ${resetUrl}`;
+      const message = emailContent(resetUrl);
       await sendEmail({
         email: user.email,
         subject: "Reset Password",
