@@ -30,6 +30,10 @@ router.delete(
   ownerUserMiddleware,
   deleteUser
 ); //admin/account owner
-router.post("/:userId", authenticationMiddleware, addFlatFavourites);
+router.post(
+  "/favourite/:userId/flat/:flatId",
+  authenticationMiddleware,
+  addFlatFavourites
+);
 
 export default router;

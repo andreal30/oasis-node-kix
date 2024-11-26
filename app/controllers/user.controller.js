@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import { Flat } from "../models/flat.model.js";
 import logger from "../utils/logger.js";
 
 const getAllUsers = async (req, res) => {

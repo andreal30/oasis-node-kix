@@ -50,7 +50,7 @@ const addFlat = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-//ADD SEVEAL FLATS AT A TIME !!!! DONT FORGET TO DELETE IF DOESENT WORK
+//ADD SEVEAL FLATS AT A TIME !!!! delete for production
 const addFlats = async (req, res) => {
     try {
         const newFlats = await Flat.insertMany(req.body);
@@ -84,15 +84,16 @@ const updateFlat = async (req, res) => {
 const deleteFlat = async (req, res) => {
     try {
         const { id } = req.params;
-        const remoovedFlat = await Flat.findByIdAndDelete(id);
+        const deletedFlat = await Flat.findByIdAndDelete(id);
         if (!deletedFlat) {
-            logger.warn(`Flat not found for deletion: ${id}`);
+            logger.warn(`Flat not found for deletion: ${req.params.id}`);
             return res.status(404).json({ message: 'Flat not found' });
         }
+
         logger.info(`Deleted flat: ${id}`);
         res.status(200).json({ message: 'Flat deleted successfully' });
     } catch (error) {
-        logger.error(`Error deleting flat ${req.params.id}:`, error.message);
+        logger.error(`Error deleting flat ${req.params.id}: ${error.message}`);
         res.status(500).json({ message: error.message });
     }
 };
