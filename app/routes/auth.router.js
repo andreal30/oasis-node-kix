@@ -1,6 +1,16 @@
-// * /users/login -> POST
-// * /users/register -> POST
+import express from "express";
+import {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+} from "../controllers/auth.controller.js";
 
-// maybe
-// * /users/forgot-password -> POST
-// * /users/reset-password/:token -> PUT
+const router = express.Router();
+
+router.post("/register", register);
+router.post("/login", login);
+router.post("/forgot-password", forgotPassword);
+router.put("/reset-password/:token", resetPassword);
+
+export default router;
