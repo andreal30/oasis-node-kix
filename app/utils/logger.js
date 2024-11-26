@@ -11,13 +11,13 @@ const logFormat = winston.format.printf(({ level, message, timestamp }) => {
 const customLevelOptions = {
   levels: {
     error: 0,
-    warning: 1,
+    warn: 1,
     info: 2,
     debug: 3,
   },
   colors: {
     error: "red",
-    warning: "yellow",
+    warn: "yellow",
     info: "green",
     debug: "blue",
   },
@@ -53,6 +53,7 @@ const logger = winston.createLogger({
       level: "debug",
       format: winston.format.combine(
         winston.format.colorize({
+
           all: true,
           colors: customLevelOptions.colors,
         })

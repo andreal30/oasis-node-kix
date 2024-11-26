@@ -1,8 +1,9 @@
+import { string } from "joi";
 import mongoose from "mongoose";
 
 // 1er paso: definir el schema de la BDD para la coleccion de usuarios
 const userSchema = new mongoose.Schema({
-    email:{
+    email: {
         type: String,
         required: true,
         unique: true
@@ -15,7 +16,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    lastName:{
+    lastName: {
         type: String,
         required: true
     },
@@ -24,10 +25,11 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     isAdmin: {
+
         type: Boolean,
         default: false
     },
-    created:{
+    created: {
         type: Date,
         default: Date.now
     },
@@ -44,7 +46,8 @@ const userSchema = new mongoose.Schema({
     ],
     // El proyecto les dice qu hagan un borrado fisico, pero es mejor hacer un borrado logico
     deleted: {
-        type: Date
+        type: Date,
+        default: null
     },
 })
 
