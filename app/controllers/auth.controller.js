@@ -43,7 +43,7 @@ const register = async (req, res) => {
     // If the user exists and is not deleted, return a conflict error
     res.status(409).json({ message: "User already exists and is active" });
   } catch (error) {
-    logger.error(error.message);
+    logger.error("Error registering user:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
@@ -88,7 +88,7 @@ const login = async (req, res) => {
 
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
-    logger.error(error);
+    logger.error("Error logging in:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -121,7 +121,7 @@ const forgotPassword = async (req, res) => {
       });
       res.json({ message: "Email sent" });
     } catch (error) {
-      logger.error(error.message);
+      logger.error("Error sending email:", error.message);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
 
@@ -129,7 +129,7 @@ const forgotPassword = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   } catch (error) {
-    logger.error(error.message);
+    logger.error("Error forgot password:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -138,9 +138,6 @@ const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
-
-    console.log("Token received:", token);
-    console.log("Password received:", password);
 
     if (!token || !password) {
       return res
@@ -152,8 +149,6 @@ const resetPassword = async (req, res) => {
       .createHash("sha256")
       .update(token)
       .digest("hex");
-
-    console.log("Hashed token:", resetPasswordToken);
 
     const user = await User.findOne({
       resetPasswordToken,
@@ -171,8 +166,7 @@ const resetPassword = async (req, res) => {
     await user.save();
     res.json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error("Error during password reset:", error);
-    logger.error(error.message);
+    logger.error("Error resetting password:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -24,7 +24,7 @@ const customLevelOptions = {
 };
 
 const fileTransport = new winston.transports.DailyRotateFile({
-  dirname: "./app/logs",
+  dirname: "./logs",
   filename: "application-%DATE%.log", //application-2024-10-25.log, application-2024-10-26.log
   datePattern: "YYYY-MM-DD",
   //vamos a definir una politica de retencion de archivos
@@ -53,7 +53,6 @@ const logger = winston.createLogger({
       level: "debug",
       format: winston.format.combine(
         winston.format.colorize({
-
           all: true,
           colors: customLevelOptions.colors,
         })
