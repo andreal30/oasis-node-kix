@@ -9,7 +9,7 @@ import {
 import {
   adminMiddleware,
   ownerUserMiddleware,
-} from "../middlewares/authorization.middleware.js";
+} from "./../middlewares/authorization.middleware.js";
 import authenticationMiddleware from "../middlewares/authentication.middleware.js";
 
 const router = Router();

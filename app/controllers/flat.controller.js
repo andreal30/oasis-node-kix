@@ -36,10 +36,16 @@ const getFlatById = async (req, res) => {
     }
 };
 //ADD NEW FLAT
+
 const addFlat = async (req, res) => {
     try {
-
-        const newFlat = new Flat(req.body);
+        // Highlight[
+        const flatData = {
+            ...req.body,
+            ownerId: req.user.user_id
+        };
+        // ]Highlight
+        const newFlat = new Flat(flatData);
         const savedFlat = await newFlat.save();
 
         logger.info(`Created new flat with id: ${savedFlat._id}`);
@@ -50,7 +56,8 @@ const addFlat = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-//ADD SEVEAL FLATS AT A TIME !!!! delete for production
+
+//ADD SEVEAL FLATS AT A TIME !!!! delete for prod
 const addFlats = async (req, res) => {
     try {
         const newFlats = await Flat.insertMany(req.body);
@@ -62,26 +69,59 @@ const addFlats = async (req, res) => {
     }
 };
 //UPDATE FLAT
+
 const updateFlat = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { flatId } = req.params;
+
         const updatedFlat = await Flat.findByIdAndUpdate(
-            id,
+            flatId,
             req.body,
             { new: true, runValidators: true }
         );
         if (!updatedFlat) {
-            logger.warn(`Flat not found for update with ID: ${id}`);
+            logger.warn(`Flat not found for update with ID: ${flatId}`);
             return res.status(404).json({ message: "Flat not found" });
         }
+        logger.info(`Updated flat: ${flatId}`);
         return res.status(200).json(updatedFlat);
     } catch (error) {
         logger.error(`Error updating flat ${req.params.id}:`, error.message);
         res.status(500).json({ message: error.message });
     }
 };
+
+
+
 //DELETE FLAT
 const deleteFlat = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Highlight[
+        const flat = await Flat.findById(id);
+
+        if (!flat) {
+            logger.warn(`Flat not found for deletion: ${id}`);
+            return res.status(404).json({ message: 'Flat not found' });
+        }
+
+        // Check if the user is the owner of the flat or an admin
+        if (flat.ownerId.toString() !== req.user.user_id && req.user.role !== 'admin') {
+            logger.warn(`User ${req.user.user_id} attempted to delete flat ${id} without ownership`);
+            return res.status(403).json({ message: "Access denied. You don't own this flat." });
+        }
+        // ]Highlight
+
+        await Flat.findByIdAndDelete(id);
+
+        logger.info(`Deleted flat: ${id}`);
+        res.status(200).json({ message: 'Flat deleted successfully' });
+    } catch (error) {
+        logger.error(`Error deleting flat ${req.params.id}: ${error.message}`);
+        res.status(500).json({ message: error.message });
+    }
+};
+/*const deleteFlat = async (req, res) => {
     try {
         const { id } = req.params;
         const deletedFlat = await Flat.findByIdAndDelete(id);
@@ -96,6 +136,6 @@ const deleteFlat = async (req, res) => {
         logger.error(`Error deleting flat ${req.params.id}: ${error.message}`);
         res.status(500).json({ message: error.message });
     }
-};
+};*/
 
 export { getAllFlats, getFlatById, addFlat, updateFlat, deleteFlat, addFlats };

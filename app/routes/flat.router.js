@@ -1,20 +1,25 @@
 import { Router } from "express";
 import { getAllFlats, getFlatById, addFlat, updateFlat, deleteFlat, addFlats } from "../controllers/flat.controller.js";
+import authenticationMiddleware from "../middlewares/authentication.middleware.js";
+import { flatOwnerMiddleware } from "../middlewares/authorization.middleware.js";
 //import { authorizeFlatOwner } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
 // Routes defined for CRUD operations on flats
+//public routes
 router.get("/", getAllFlats);
 
 router.get("/:id", getFlatById);
 
-router.post("/", addFlat);//use auth middleware to authorize only flat owners.
+//Protected routes
 
-router.patch("/:id", updateFlat);//use auth middleware to authorize only flat owners.
+router.post("/", authenticationMiddleware, addFlat);
 
-router.delete("/:id", deleteFlat);//use auth middleware to authorize only flat owners.
+router.patch("/:flatId", authenticationMiddleware, flatOwnerMiddleware, updateFlat);
 
-router.post("/bulk", addFlats);//use auth middleware to authorize only flat owners.
+router.delete("/:flatId", authenticationMiddleware, flatOwnerMiddleware, deleteFlat);
+
+router.post("/bulk", authenticationMiddleware, flatOwnerMiddleware, addFlats);
 
 export default router;
