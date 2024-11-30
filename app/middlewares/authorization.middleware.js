@@ -12,6 +12,11 @@ const adminMiddleware = (req, res, next) => {
 
 // Middleware to check if the user is the owner of the account
 const ownerUserMiddleware = (req, res, next) => {
+  // If the user is an admin, allow access
+  if (req.user.isAdmin) {
+    return next();
+  }
+
   // Ensure req.user is set (after authentication)
   if (!req.user) {
     return res.status(401).json({ message: "User not authenticated" });
