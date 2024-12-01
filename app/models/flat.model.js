@@ -41,6 +41,7 @@ const flatSchema = new mongoose.Schema({
   dateAvailable: {
     type: Date,
     required: true,
+    min: Date.now,
   },
   rooms: {
     type: Number,
@@ -65,8 +66,11 @@ const flatSchema = new mongoose.Schema({
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    //added required
     required: true,
+  },
+  deleted: {
+    type: Date,
+    default: null,
   },
 });
 

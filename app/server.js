@@ -8,10 +8,11 @@ import userRoutes from "./routes/user.router.js";
 import authRoutes from "./routes/auth.router.js";
 import logsRoutes from "./routes/logs.router.js";
 import messageRoutes from "./routes/message.router.js";
+
 const app = express();
 dotenv.config();
 
-//Middleware para parsear JSON
+// Middleware to parse JSON
 app.use(express.json());
 app.use(cors());
 
