@@ -19,7 +19,8 @@ const ownerUserMiddleware = (req, res, next) => {
 
   // Get the user ID from req.user and the ID being accessed (from params or body)
   const loggedInUserId = req.user.user_id;
-  const userIdToAccess = req.params.userId || req.body.userId;
+  const userIdToAccess =
+    req.params.userId || req.body.userId || req.params.senderId;
 
   // Check if the logged-in user is the owner of the account
   if (loggedInUserId !== userIdToAccess) {
