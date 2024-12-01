@@ -3,9 +3,9 @@ import logger from "../utils/logger.js";
 
 const getAllMessages = async (req, res) => {
     try {
-        const { id } = req.params;
-        logger.info(`Fetching all messages for flat ID: ${id}`);
-        const messages = await Message.find({ flatId: id });
+        const { flatId } = req.params;
+        logger.info(`Fetching all messages for flat ID: ${flatId}`);
+        const messages = await Message.find({ flatId });
         res.status(200).json(messages);
     } catch (error) {
         logger.error("Error fetching messages", error.message);
@@ -15,9 +15,9 @@ const getAllMessages = async (req, res) => {
 
 const getUserMessage = async (req, res) => {
     try {
-        const { id, senderId } = req.params;
-        logger.info(`Fetching messages for flat ID: ${id} and sender ID: ${senderId}`);
-        const messages = await Message.find({ flatId: id, senderId: senderId });
+        const { flatId, senderId } = req.params;
+        logger.info(`Fetching messages for flat ID: ${flatId} and sender ID: ${senderId}`);
+        const messages = await Message.find({ flatId, senderId });
         res.status(200).json(messages);
     } catch (error) {
         logger.error("Error fetching user messages", error.message);
@@ -27,8 +27,8 @@ const getUserMessage = async (req, res) => {
 
 const addMessage = async (req, res) => {
     try {
-        const { id } = req.params;
-        const newMessage = new Message({ ...req.body, flatId: id });
+        const { flatId } = req.params;
+        const newMessage = new Message({ ...req.body, flatId, senderId: req.user._id });
         const savedMessage = await newMessage.save();
         logger.info(`Created new message with id: ${savedMessage._id}`);
         res.status(201).json(savedMessage);
@@ -38,4 +38,4 @@ const addMessage = async (req, res) => {
     }
 };
 
-export { getAllMessages, getUserMessage, addMessage }
+export { getAllMessages, getUserMessage, addMessage };

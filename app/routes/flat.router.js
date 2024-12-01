@@ -8,9 +8,9 @@ const router = Router();
 
 // Routes defined for CRUD operations on flats
 //public routes
-router.get("/", getAllFlats);
+router.get("/", authenticationMiddleware, getAllFlats);
 
-router.get("/:id", getFlatById);
+router.get("/:id", authenticationMiddleware, getFlatById);
 
 //Protected routes
 
