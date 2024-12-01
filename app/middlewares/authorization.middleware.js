@@ -65,6 +65,7 @@ const flatOwnerMiddleware = async (req, res, next) => {
 
 export { adminMiddleware, ownerUserMiddleware, flatOwnerMiddleware };
 
+
 // New improved logic for testing
 /*
 import jwt from "jsonwebtoken";
@@ -128,3 +129,4 @@ const flatOwnerMiddleware = async (req, res, next) => {
 
 export { authenticateUser, adminMiddleware, ownerUserMiddleware, flatOwnerMiddleware };
 */
+
