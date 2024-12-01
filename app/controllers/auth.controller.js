@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import sendEmail from "../utils/email.js";
 import crypto from "crypto";
 import logger from "../utils/logger.js";
+import { emailContent } from "../utils/emailContent.js";
 // import bcrypt from "bcrypt";
 
 const register = async (req, res) => {
@@ -42,7 +43,7 @@ const register = async (req, res) => {
     // If the user exists and is not deleted, return a conflict error
     res.status(409).json({ message: "User already exists and is active" });
   } catch (error) {
-    logger.error(error.message);
+    logger.error("Error registering user:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
@@ -87,7 +88,7 @@ const login = async (req, res) => {
 
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
-    logger.error(error);
+    logger.error("Error logging in:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -107,12 +108,12 @@ const forgotPassword = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     //3.- Vamos a generar la url que vamos a enviar al correo del usuario
-    //`http://flat-finder-back.andrealvarezcis.com/reset-password/${resetToken}`
+    //`http://flat-finder.andrealvarezcis.com/reset-password/${resetToken}`
     // Confirmar si el link es con el front o back (creo que es con el front, asi que se tiene que cambiar)
     const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
 
     try {
-      const message = `Para resetear el password, accede al siguiente link: ${resetUrl}`;
+      const message = emailContent(resetUrl);
       await sendEmail({
         email: user.email,
         subject: "Reset Password",
@@ -120,7 +121,7 @@ const forgotPassword = async (req, res) => {
       });
       res.json({ message: "Email sent" });
     } catch (error) {
-      logger.error(error.message);
+      logger.error("Error sending email:", error.message);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
 
@@ -128,7 +129,7 @@ const forgotPassword = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   } catch (error) {
-    logger.error(error.message);
+    logger.error("Error forgot password:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -137,9 +138,6 @@ const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
-
-    console.log("Token received:", token);
-    console.log("Password received:", password);
 
     if (!token || !password) {
       return res
@@ -151,8 +149,6 @@ const resetPassword = async (req, res) => {
       .createHash("sha256")
       .update(token)
       .digest("hex");
-
-    console.log("Hashed token:", resetPasswordToken);
 
     const user = await User.findOne({
       resetPasswordToken,
@@ -170,8 +166,7 @@ const resetPassword = async (req, res) => {
     await user.save();
     res.json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error("Error during password reset:", error);
-    logger.error(error.message);
+    logger.error("Error resetting password:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
