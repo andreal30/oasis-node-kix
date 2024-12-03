@@ -116,10 +116,13 @@ const forgotPassword = async (req, res) => {
       const message = emailContent(resetUrl);
       await sendEmail({
         email: user.email,
-        subject: "Reset Password",
+        subject: "Reset Password - Flat Finder",
         message,
       });
-      res.json({ message: "Email sent" });
+      res.json({
+        message:
+          "Email sent. Please check your inbox for further instructions.",
+      });
     } catch (error) {
       logger.error("Error sending email:", error.message);
       user.resetPasswordToken = undefined;
