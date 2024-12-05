@@ -7,6 +7,9 @@ const getAllMessages = async (req, res) => {
     const { flatId } = req.params;
     logger.info(`Fetching all messages for flat ID: ${flatId}`);
     const messages = await Message.find({ flatId });
+    if (!messages || messages.length === 0) {
+      return res.status(404).json({ message: "No messages found" });
+    }
     res.status(200).json(messages);
   } catch (error) {
     logger.error("Error fetching messages", error.message);
@@ -17,12 +20,23 @@ const getAllMessages = async (req, res) => {
 const getUserMessage = async (req, res) => {
   try {
     const { flatId, senderId } = req.params;
+
     logger.info(
       `Fetching messages for flat ID: ${flatId} and sender ID: ${senderId}`
     );
+
+    // Fetch messages from the database
     const messages = await Message.find({ flatId, senderId });
+
+    // Check if messages exist
+    if (!messages || messages.length === 0) {
+      return res.status(404).json({ message: "No messages found" });
+    }
+
+    // Respond with messages if found
     res.status(200).json(messages);
   } catch (error) {
+    // Log and respond with error
     logger.error("Error fetching user messages", error.message);
     res.status(500).json({ message: error.message });
   }
