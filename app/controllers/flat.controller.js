@@ -106,48 +106,41 @@ const deleteFlat = async (req, res) => {
   try {
     const { flatId } = req.params;
 
-    const deletedFlat = await Flat.findByIdAndUpdate(
-      flatId,
-      { updated: new Date(), deleted: new Date(), ...req.body }, // Set the 'deleted' field to the current date
-      { new: true, runValidators: true } // Options for returning the updated document
-    );
-    if (!deletedFlat) {
-      logger.warn(`Flat not found for update with ID: ${flatId}`);
+    // Validate flatId (Example: using mongoose isValidObjectId)
+    if (!flatId) {
+      logger.warn(`Invalid flat ID: ${flatId}`);
+      return res.status(400).json({ message: "Invalid flat ID" });
+    }
+
+    // Fetch the flat details
+    const flat = await Flat.findById(flatId);
+
+    if (!flat) {
+      logger.warn(`Flat not found with ID: ${flatId}`);
       return res.status(404).json({ message: "Flat not found" });
     }
-    logger.info(`Deleted flat: ${flatId}`);
-    return res.status(200).json(deletedFlat);
 
-    // const { flatId } = req.params;
+    // Check if already deleted
+    if (flat.deleted) {
+      logger.warn(`Flat with ID: ${flatId} is already deleted`);
+      return res.status(400).json({ message: "Flat already deleted" });
+    }
 
-    // // Find flat by ID
-    // const flat = await Flat.findById(flatId);
+    // Update the flat to soft-delete
+    flat.deleted = new Date();
+    flat.updated = new Date();
+    await flat.save();
 
-    // if (!flat) {
-    //   logger.warn(`Flat not found for deletion: ${flatId}`);
-    //   return res.status(404).json({ message: "Flat not found" });
-    // }
-
-    // Check if the user is the owner of the flat or an admin
-    // const isOwner = flat.ownerId.toString() === req.user.user_id;
-    // const isAdmin = req.user.role === "admin";
-
-    // if (!isOwner && !isAdmin) {
-    //   logger.warn(
-    //     `User ${req.user.user_id} attempted to delete flat ${flatId} without ownership`
-    //   );
-    //   return res.status(403).json({ message: "Access denied. Not the flat." });
-    // }
-
-    // Soft delete the flat by setting a deleted flag
-    // flat.deleted = true;
-    // await flat.save();
-
-    // logger.info(`Soft deleted flat: ${flatId}`);
-    // res.status(200).json({ message: "Flat deleted successfully" });
+    logger.info(`Successfully deleted flat with ID: ${flatId}`);
+    return res.status(200).json({
+      message: "Flat successfully deleted",
+      flat,
+    });
   } catch (error) {
-    logger.error(`Error deleting flat ${req.params.flatId}: ${error.message}`);
-    res.status(500).json({ message: error.message });
+    logger.error(
+      `Error deleting flat with ID: ${req.params.flatId}: ${error.message}`
+    );
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
