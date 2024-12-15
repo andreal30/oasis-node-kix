@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import logger from "../utils/logger.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { profile } from "console";
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -74,6 +75,10 @@ const userSchema = new mongoose.Schema({
       alias: "favs",
     },
   ],
+  profileImage: {
+    type: String,
+    alias: "image",
+  },
   resetPasswordToken: String, // to be able to generate an unique identifier (token) that we're going to send to the user (email)
   resetPasswordExpires: Date, // to be able to define the expiration date of our token
   // El proyecto les dice qu hagan un borrado fisico, pero es mejor hacer un borrado logico
