@@ -1,5 +1,13 @@
 import Flat from "../models/flat.model.js";
 import logger from "../utils/logger.js";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+import { storage } from "./../configs/firebase.js";
+
 //GET ALL FLATS
 const getAllFlats = async (req, res) => {
   try {
@@ -51,9 +59,13 @@ const getFlatById = async (req, res) => {
 
 const addFlat = async (req, res) => {
   try {
+    // const file = req.file; // Assuming you're handling file uploads with multer
+    // const imageUrl = await uploadFlatImage(file);
+
     const flatData = {
       ...req.body,
       ownerId: req.user.user_id,
+      // image: imageUrl,
     };
 
     const newFlat = new Flat(flatData);
@@ -83,6 +95,11 @@ const addFlats = async (req, res) => {
 const updateFlat = async (req, res) => {
   try {
     const { flatId } = req.params;
+
+    // let flatImageUrl = "";
+    // if (req.file) {
+    //   flatImageUrl = await uploadFlatImage(req.file);
+    // }
 
     const updatedFlat = await Flat.findByIdAndUpdate(
       flatId,

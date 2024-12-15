@@ -5,15 +5,22 @@ import sendEmail from "../utils/email.js";
 import crypto from "crypto";
 import logger from "../utils/logger.js";
 import { emailContent } from "../utils/emailContent.js";
+import { profile } from "console";
 // import bcrypt from "bcrypt";
 
 const register = async (req, res) => {
   try {
+    // let profileImageUrl = "";
+    // if (req.file) {
+    //   profileImageUrl = await uploadUserImage(req.file);
+    // }
+
     const userEmail = await User.findOne({ email: req.body.email });
 
     if (!userEmail) {
       // If no user exists with the given email, create a new user
-      const newUser = new User(req.body);
+      const userData = { ...req.body };
+      const newUser = new User(userData);
       await newUser.save();
       return res.status(201).json(newUser);
     }
@@ -24,6 +31,7 @@ const register = async (req, res) => {
 
       user.deleted = null;
       user.updated = new Date();
+      user = { ...req.body, profileImage: profileImageUrl };
 
       // Check if a new password is provided in the request
       if (req.body.password) {
@@ -48,19 +56,34 @@ const register = async (req, res) => {
   }
 };
 
+// check that it accepts one field and then determines if its an email or a username
 const login = async (req, res) => {
   try {
     const password = req.body.password;
-    const emailUsername = req.body.username || req.body.email;
+    const emailOrUsername = req.body.email || req.body.username;
 
-    // Determine if the input is an email or a username
-    const isEmail = emailUsername.includes("@");
+    if (!emailOrUsername || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email/username and password are required" });
+    }
+
+    console.log("1. LOGIN request received with:", {
+      emailOrUsername,
+      password,
+    });
+
+    const isEmail = emailOrUsername.includes("@");
     const query = isEmail
-      ? { email: emailUsername }
-      : { username: emailUsername };
+      ? { email: emailOrUsername }
+      : { username: emailOrUsername };
+
+    console.log("2. LOGIN query:", query);
 
     // Find the user by email or username
     const user = await User.findOne(query);
+
+    console.log("3. LOGIN user:", user);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -72,23 +95,42 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    if (user.deleted !== null) {
+      return res.status(401).json({ message: "User is deleted" });
+    }
+
+    console.log("4. LOGIN passwordsMatch:");
+
     // Generate JWT token
     const token = jwt.sign(
-      { user_id: user._id, isAdmin: user.isAdmin },
+      { user_id: user._id.toString(), isAdmin: user.isAdmin },
       configs.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    // Set token as httpOnly cookie (optional)
+    console.log("5. LOGIN token:", token);
+    // Set the token in a cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 3600000,
+      secure: true,
+      sameSite: "none",
     });
+
+    console.log("6. LOGIN cookie set");
 
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
-    logger.error("Error logging in:", error.message);
+    console.error("Error logging in:", error.message);
+    res.status(500).json({ message: "LOGIN Internal server error" });
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    logger.error("Error logging out:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -174,4 +216,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-export { register, login, forgotPassword, resetPassword };
+export { register, login, forgotPassword, resetPassword, logout };

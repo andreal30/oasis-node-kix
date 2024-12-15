@@ -8,6 +8,8 @@ import {
   removeFlatFavourites,
   allowAdmin,
   denyAdmin,
+  validateUnique,
+  getFlatsCountForUsers,
 } from "../controllers/user.controller.js";
 import {
   adminMiddleware,
@@ -18,6 +20,30 @@ import authenticationMiddleware from "../middlewares/authentication.middleware.j
 const router = Router();
 
 router.get("/", authenticationMiddleware, adminMiddleware, getAllUsers); // admin
+router.post(
+  "/favourite-flat/:flatId",
+  authenticationMiddleware,
+  addFlatFavourites
+);
+router.delete(
+  "/favourite-flat/:flatId",
+  authenticationMiddleware,
+  removeFlatFavourites
+);
+router.patch(
+  "/admin/:userId",
+  authenticationMiddleware,
+  adminMiddleware,
+  allowAdmin
+);
+router.delete(
+  "/admin/:userId",
+  authenticationMiddleware,
+  adminMiddleware,
+  denyAdmin
+);
+router.post("/validate-unique", validateUnique);
+router.post("/flats/count", getFlatsCountForUsers);
 router.get(
   "/:userId",
   authenticationMiddleware,
@@ -36,27 +62,5 @@ router.delete(
   ownerUserMiddleware,
   deleteUser
 ); //admin/account owner
-router.post(
-  "/favourite-flat/:flatId",
-  authenticationMiddleware,
-  addFlatFavourites
-);
-router.delete(
-  "/favourite-flat/:flatId",
-  authenticationMiddleware,
-  removeFlatFavourites
-);
-router.post(
-  "/admin/:userId",
-  authenticationMiddleware,
-  adminMiddleware,
-  allowAdmin
-);
-router.delete(
-  "/admin/:userId",
-  authenticationMiddleware,
-  adminMiddleware,
-  denyAdmin
-);
 
 export default router;

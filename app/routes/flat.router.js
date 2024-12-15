@@ -36,5 +36,4 @@ router.delete(
 );
 
 router.post("/bulk", authenticationMiddleware, flatOwnerMiddleware, addFlats);
-
 export default router;
