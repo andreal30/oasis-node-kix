@@ -1,20 +1,92 @@
 import Flat from "../models/flat.model.js";
 import { User } from "../models/user.model.js";
 import logger from "../utils/logger.js";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+import { storage } from "./../configs/firebase.js";
+import { calculateAge } from "../utils/date.js";
+
+const validateUnique = async (req, res) => {
+  const { field, value } = req.body;
+
+  if (!field || !value) {
+    return res
+      .status(400)
+      .json({ isUnique: false, message: "Field and value are required." });
+  }
+
+  // Check uniqueness
+  const exists = await User.findOne({ [field]: value });
+  if (exists) {
+    return res.status(200).json({
+      isUnique: false,
+      message: `The ${field} "${value}" is already taken.`,
+    });
+  }
+
+  res.status(200).json({ isUnique: true });
+};
+
+const getFlatsCountForUsers = async (req, res) => {
+  try {
+    const { userIds } = req.body; // Expecting an array of user IDs to be passed in the request body
+
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Please provide an array of user IDs." });
+    }
+
+    // Fetch the flat count for each user
+    const flatsCountResults = await Promise.all(
+      userIds.map(async (userId) => {
+        const flatsCount = await Flat.countDocuments({ ownerId: userId });
+        return { userId, flatsCount }; // Return both userId and flat count
+      })
+    );
+
+    logger.info(`Fetched flat counts for ${userIds.length} users`);
+
+    return res.status(200).json(flatsCountResults);
+  } catch (error) {
+    logger.error(`Error fetching flat counts: ${error.message}`);
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch flat counts. Please try again later." });
+  }
+};
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
-    res.json(users);
+    // Step 1: Fetch all users excluding deleted ones
+    const usersDb = await User.find({ deleted: null });
+
+    // Step 2: Add dynamic fields (flatCount) to users
+    const users = await Promise.all(
+      usersDb.map(async (user) => ({
+        ...user.toObject(),
+        flatCount: await Flat.countDocuments({ ownerId: user._id }),
+        age: calculateAge(new Date(user.birthDate)),
+      }))
+    );
+
+    // Step 5: Return the result
+    res.status(200).json(users);
   } catch (error) {
-    logger.error("Error fetching users", error.message);
-    res.status(500).json({ message: error.message });
+    console.error("Error in getAllUsers:", error.message);
+    res.status(500).json({ message: "Error fetching users." });
   }
 };
 
 const getUserById = async (req, res) => {
   try {
-    // const product = await Product.find({ _id: req.params.id });
+    console.log("1. USER ID Received request for user ID:", req.params.userId);
+    console.log("2. USER ID Authenticated user:", req.user);
+
     const user = await User.findById(req.params.userId);
 
     if (!user) {
@@ -29,17 +101,21 @@ const getUserById = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(
+    const updatedData = {
+      ...req.body,
+      updated: new Date(),
+    };
+    const updatedUser = await User.findByIdAndUpdate(
       req.params.userId,
-      { updated: new Date(), ...req.body }, // Set the 'deleted' field to the current date
-      { new: true, runValidators: true } // Options for returning the updated document
+      updatedData,
+      { new: true }
     );
 
-    if (!user) {
+    if (!updatedUser) {
       return res.status(404).send({ message: "User not found" });
     }
 
-    res.json(user);
+    res.json(updatedUser);
   } catch (error) {
     logger.error("Error updating user", error.message);
     res.status(400).send(error);
@@ -90,11 +166,6 @@ const addFlatFavourites = async (req, res) => {
     const user = await User.findById(loggedInUserId);
     const { flatId } = req.params;
     const flat = await Flat.findById(req.params.flatId);
-
-    //Vamos a relacionar el comentario con la orden
-    //Primero necesito buscar la orden con el id que recibi en el path param
-    // const order = await User.findById(userId).populate("favourites");
-    // const user = await User.findById(userId)
 
     //Validamos si la orden existe en la BDD
     if (!user) {
@@ -216,4 +287,6 @@ export {
   removeFlatFavourites,
   allowAdmin,
   denyAdmin,
+  validateUnique,
+  getFlatsCountForUsers,
 };

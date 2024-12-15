@@ -1,17 +1,9 @@
 export const emailContent = (resetUrl) => {
   return `<html>
     <head>
-    <link rel="stylesheet" href="https://unpkg.com/primeflex@latest/primeflex.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@800&display=swap"
-      rel="stylesheet"
-    />
       <style>
-        @import url("https://fonts.googleapis.com/css2?family=Parkinsans:wght@800&display=swap");
         body {
-           font-family: "Parkinsans", serif !important;
+           font-family: "trebuchet-ms", sans-serif !important;
            font-optical-sizing: auto;
            font-style: normal;
            font-weight: 400;
