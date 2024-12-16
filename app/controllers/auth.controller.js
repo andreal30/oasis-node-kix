@@ -102,10 +102,12 @@ const login = async (req, res) => {
     console.log("4. LOGIN passwordsMatch:");
 
     // Generate JWT token
+    console.log("4.1 LOGIN SECRET:", configs.JWT_SECRET); // Log the secret before signing
+
     const token = jwt.sign(
-      { user_id: user._id.toString(), isAdmin: user.isAdmin },
-      configs.JWT_SECRET,
-      { expiresIn: "1h" }
+      { user_id: user._id.toString(), isAdmin: user.isAdmin }, // Payload
+      configs.JWT_SECRET, // Secret
+      { expiresIn: "1h" } // Options
     );
 
     console.log("5. LOGIN token:", token);

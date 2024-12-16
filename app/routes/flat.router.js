@@ -17,8 +17,6 @@ const router = Router();
 //public routes
 router.get("/", authenticationMiddleware, getAllFlats);
 
-router.get("/:id", authenticationMiddleware, getFlatById);
-
 router.post("/", authenticationMiddleware, addFlat);
 
 router.patch(
@@ -36,4 +34,5 @@ router.delete(
 );
 
 router.post("/bulk", authenticationMiddleware, flatOwnerMiddleware, addFlats);
+router.get("/:id", authenticationMiddleware, getFlatById);
 export default router;
