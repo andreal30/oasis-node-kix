@@ -1,12 +1,5 @@
 import Flat from "../models/flat.model.js";
 import logger from "../utils/logger.js";
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
-import { storage } from "./../configs/firebase.js";
 
 //GET ALL FLATS
 const getAllFlats = async (req, res) => {
@@ -17,7 +10,7 @@ const getAllFlats = async (req, res) => {
     }
 
     logger.info("Flats obtained by user:", req.user.user_id);
-    const flats = await Flat.find();
+    const flats = await Flat.find({ deleted: null });
     res.status(200).json(flats);
   } catch (error) {
     logger.error("Error fetching flats", error.message);
@@ -30,6 +23,11 @@ const getFlatById = async (req, res) => {
     if (!req.user) {
       logger.warn("Unauthorized access attempt to get flat by ID");
       return res.status(401).json({ message: "Login or Create Account" });
+    }
+
+    if (deleted) {
+      logger.warn(`Flat not found with ID: ${id}`);
+      return res.status(404).json({ message: "Flat not found" });
     }
 
     const { id } = req.params;
