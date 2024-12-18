@@ -41,7 +41,7 @@ const flatSchema = new mongoose.Schema({
   dateAvailable: {
     type: Date,
     required: true,
-    min: Date.now,
+    // min: Date.now(),
   },
   rooms: {
     type: Number,
