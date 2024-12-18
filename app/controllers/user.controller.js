@@ -1,13 +1,6 @@
 import Flat from "../models/flat.model.js";
 import { User } from "../models/user.model.js";
 import logger from "../utils/logger.js";
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
-import { storage } from "./../configs/firebase.js";
 import { calculateAge } from "../utils/date.js";
 
 const validateUnique = async (req, res) => {
@@ -164,8 +157,10 @@ const addFlatFavourites = async (req, res) => {
   try {
     const loggedInUserId = req.user.user_id;
     const user = await User.findById(loggedInUserId);
+    console.log("1. ADD FAVOURITES User:", user);
     const { flatId } = req.params;
     const flat = await Flat.findById(req.params.flatId);
+    console.log("2. ADD FAVOURITES Flat:", flat);
 
     //Validamos si la orden existe en la BDD
     if (!user) {
@@ -184,6 +179,8 @@ const addFlatFavourites = async (req, res) => {
 
     user.favouriteFlats.push(flatId);
     user.updated = new Date();
+
+    console.log("3. ADD FAVOURITES updated User:", user);
 
     await user.save();
     res.status(201).json({ message: "Flat added to favourites", user });

@@ -6,6 +6,8 @@ import crypto from "crypto";
 import logger from "../utils/logger.js";
 import { emailContent } from "../utils/emailContent.js";
 import { profile } from "console";
+import { OAuth2Client } from "google-auth-library";
+
 // import bcrypt from "bcrypt";
 
 const register = async (req, res) => {
@@ -218,4 +220,51 @@ const resetPassword = async (req, res) => {
   }
 };
 
-export { register, login, forgotPassword, resetPassword, logout };
+const client = new OAuth2Client(configs.GOOGLE_CLIENT_ID);
+console.log(client);
+
+// Controller for handling Google authentication
+// const handleGoogleAuth = async (req, res) => {
+//   const { token } = req.body;
+//   try {
+//     // Verify the Google ID token
+//     const ticket = await client.verifyIdToken({
+//       idToken: token,
+//       audience: configs.GOOGLE_CLIENT_ID,
+//     });
+//     const payload = ticket.getPayload();
+
+//     // Check if user exists in the database, or create a new user
+//     let user = await User.findOne({ email: payload.email });
+//     if (!user) {
+//       user = new User({
+//         email: payload.email,
+//         name: payload.name,
+//         googleId: payload.sub,
+//       });
+//       await user.save();
+//     }
+
+//     // Generate JWT token for the authenticated user
+//     const accessToken = jwt.sign(
+//       { userId: user.googleId, email: user.email },
+//       configs.JWT_SECRET,
+//       { expiresIn: "1h" }
+//     );
+
+//     // Return the access token
+//     res.json({ accessToken });
+//   } catch (error) {
+//     console.error("Google authentication error:", error);
+//     res.status(400).send("Authentication failed");
+//   }
+// };
+
+export {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+  logout,
+  // handleGoogleAuth,
+};
