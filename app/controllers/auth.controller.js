@@ -5,8 +5,8 @@ import sendEmail from "../utils/email.js";
 import crypto from "crypto";
 import logger from "../utils/logger.js";
 import { emailContent } from "../utils/emailContent.js";
-import { profile } from "console";
-import { OAuth2Client } from "google-auth-library";
+// import { profile } from "console";
+// import { OAuth2Client } from "google-auth-library";
 
 // import bcrypt from "bcrypt";
 
@@ -220,11 +220,12 @@ const resetPassword = async (req, res) => {
   }
 };
 
-const client = new OAuth2Client(configs.GOOGLE_CLIENT_ID);
-console.log(client);
+// const client = new OAuth2Client(configs.GOOGLE_CLIENT_ID);
+// console.log(client);
 
 // Controller for handling Google authentication
 // const handleGoogleAuth = async (req, res) => {
+//   console.log("handleGoogleAuth", req.body);
 //   const { token } = req.body;
 //   try {
 //     // Verify the Google ID token
@@ -236,13 +237,14 @@ console.log(client);
 
 //     // Check if user exists in the database, or create a new user
 //     let user = await User.findOne({ email: payload.email });
+//     console.log("user", user);
 //     if (!user) {
-//       user = new User({
+//       userGoogle = new User({
 //         email: payload.email,
 //         name: payload.name,
 //         googleId: payload.sub,
 //       });
-//       await user.save();
+//       await userGoogle.save();
 //     }
 
 //     // Generate JWT token for the authenticated user
