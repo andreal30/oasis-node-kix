@@ -6,6 +6,7 @@ Listado de dependencias (node):
 - bcrypt (para hashear las contrasenas)   
 - jsonwebtoken (para manejar la autenticacion)    
 - dotenv (variables de ambiente) (en lugar de usar dotenv, pueden trabajar con variables de ambiente nativas de node, donde ya no es necesario dependencias externas)
+- google-auth-library
 
 React:
 - vite

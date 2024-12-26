@@ -17,9 +17,9 @@ const sendEmail = async (options) => {
 
   //Vamos a armar las opciones de envio de nuestro correo
   const mailOptions = {
-    // from: '"Oasis App" <no-reply@andrealvarezcis.com>',
+    from: '"Oasis App" <no-reply@andrealvarezcis.com>',
 
-    from: '"Oasis App" <no-reply@demomailtrap.com>',
+    // from: '"Oasis App" <no-reply@demomailtrap.com>',
     to: options.email,
     subject: options.subject,
     html: options.message,
