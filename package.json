@@ -1,6 +1,7 @@
 {
   "type": "module",
   "start": "node server.js",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
