@@ -4,24 +4,14 @@ import logger from "../utils/logger.js";
 import { calculateAge } from "../utils/date.js";
 
 const validateUnique = async (req, res) => {
-  const { field, value } = req.body;
-
-  if (!field || !value) {
-    return res
-      .status(400)
-      .json({ isUnique: false, message: "Field and value are required." });
+  try {
+    const { field, value } = req.body;
+    const user = await User.findOne({ [field]: value });
+    res.status(200).json({ isUnique: !user });
+  } catch (error) {
+    console.error('Error validating uniqueness:', error);
+    res.status(500).json({ error: 'Error validating uniqueness' });
   }
-
-  // Check uniqueness
-  const exists = await User.findOne({ [field]: value });
-  if (exists) {
-    return res.status(200).json({
-      isUnique: false,
-      message: `The ${field} "${value}" is already taken.`,
-    });
-  }
-
-  res.status(200).json({ isUnique: true });
 };
 
 const getFlatsCountForUsers = async (req, res) => {
@@ -275,6 +265,46 @@ const denyAdmin = async (req, res) => {
   }
 };
 
+const updateUserProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const updatedData = req.body;
+    const updatedUser = await User.findByIdAndUpdate(userId, updatedData, { new: true });
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ error: 'Error updating user profile' });
+  }
+};
+
+const addFlatFavourite = async (req, res) => {
+  try {
+    const { userId, flatId } = req.params;
+    const user = await User.findById(userId);
+    if (!user.favouriteFlats.includes(flatId)) {
+      user.favouriteFlats.push(flatId);
+      await user.save();
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error adding flat to favourites:', error);
+    res.status(500).json({ error: 'Error adding flat to favourites' });
+  }
+};
+
+const removeFlatFavourite = async (req, res) => {
+  try {
+    const { userId, flatId } = req.params;
+    const user = await User.findById(userId);
+    user.favouriteFlats = user.favouriteFlats.filter(id => id !== flatId);
+    await user.save();
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error removing flat from favourites:', error);
+    res.status(500).json({ error: 'Error removing flat from favourites' });
+  }
+};
+
 export {
   getAllUsers,
   getUserById,
@@ -286,4 +316,7 @@ export {
   denyAdmin,
   validateUnique,
   getFlatsCountForUsers,
+  updateUserProfile,
+  addFlatFavourite,
+  removeFlatFavourite,
 };

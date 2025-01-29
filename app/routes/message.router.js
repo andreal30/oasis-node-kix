@@ -28,4 +28,8 @@ router.get(
 );
 router.post("/flats/:flatId/sender", authenticationMiddleware, addMessage);
 
+router.get('/:flatId/messages', getAllMessages);
+router.get('/:flatId/messages/:senderId', getUserMessage);
+router.post('/:flatId/messages', addMessage);
+
 export default router;

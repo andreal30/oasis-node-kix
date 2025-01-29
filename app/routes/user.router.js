@@ -10,6 +10,9 @@ import {
   denyAdmin,
   validateUnique,
   getFlatsCountForUsers,
+  updateUserProfile,
+  addFlatFavourite,
+  removeFlatFavourite,
 } from "../controllers/user.controller.js";
 import {
   adminMiddleware,
@@ -62,5 +65,9 @@ router.delete(
   ownerUserMiddleware,
   deleteUser
 ); //admin/account owner
+
+router.patch('/:userId', updateUserProfile);
+router.post('/favourite-flat/:userId/:flatId', addFlatFavourite);
+router.delete('/favourite-flat/:userId/:flatId', removeFlatFavourite);
 
 export default router;
